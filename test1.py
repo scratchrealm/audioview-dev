@@ -1,6 +1,7 @@
 # 9/8/22
-# https://figurl.org/f?v=gs://figurl/spikesortingview-9&d=sha1://bbf7dede9fc901de56548af7925c39f10927b0b7&label=example%20audio
+# https://figurl.org/f?v=gs://figurl/spikesortingview-9&d=sha1://1cc0c5e74217eb2cf09e037e91743c6007eaba9c&label=example%20audio
 
+from typing import List
 import numpy as np
 import math
 import kachery_cloud as kcl
@@ -62,12 +63,23 @@ def main():
             channel_ids=[int(id) for id in R.get_channel_ids()]
         )
 
-        view = vv.Box(
-            direction='vertical',
-            items=[
-                vv.LayoutItem(v_raw),
-                vv.LayoutItem(v_raster)
-            ]
+        v_selector = ExperimentalSelector1()
+
+        view = vv.Splitter(
+            direction='horizontal',
+            item1=vv.LayoutItem(
+                v_selector,
+                max_size=300
+            ),
+            item2=vv.LayoutItem(
+                vv.Box(
+                    direction='vertical',
+                    items=[
+                        vv.LayoutItem(v_raw),
+                        vv.LayoutItem(v_raster)
+                    ]
+                )
+            )
         )
 
         # get the figURL
@@ -76,6 +88,22 @@ def main():
         
         # view = vv.LiveTraces(recording=R, recording_id='test1')
         # view.run(label='test1', port=0)
+
+class ExperimentalSelector1(vv.View):
+    """
+    Sorting summary
+    """
+    def __init__(self,
+        **kwargs
+    ) -> None:
+        super().__init__('ExperimentalSelector1', **kwargs)
+    def to_dict(self) -> dict:
+        ret = {
+            'type': self.type
+        }
+        return ret
+    def child_views(self) -> List[vv.View]:
+        return []
 
 # from mountainsort4
 def detect_on_channel(data: np.ndarray, *, detect_threshold: float, detect_interval: float, detect_sign: int, margin: int=0):
